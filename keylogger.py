@@ -12,12 +12,13 @@ _msg = byref(msg)
 LLKP_decl = CFUNCTYPE(c_int, c_int, WPARAM, POINTER(LPARAM))
 def LowLevelKeyboardProc(nCode, wParam, lParam):
     if wParam == WM_KEYDOWN:
-        vkCode = lParam[0] 
+        vkCode = lParam[0] & 0xff
         if vkCode in VK_CONTROL:
             print("Unhooking")
             user32.UnhookWindowsHookEx(hook)
             sys.exit(0)
         sys.stdout.write(chr(vkCode))
+        sys.stdout.flush()
     return user32.CallNextHookEx(hook, nCode, wParam, lParam)
 
 callback = LLKP_decl(LowLevelKeyboardProc)
